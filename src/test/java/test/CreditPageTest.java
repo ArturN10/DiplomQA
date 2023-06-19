@@ -1,17 +1,16 @@
 package test;
 
 import com.codeborne.selenide.logevents.SelenideLogger;
+import data.Card;
+import data.DbUtils;
 import io.qameta.allure.selenide.AllureSelenide;
 import lombok.val;
 import org.junit.jupiter.api.*;
-import data.Card;
-import data.DbUtils;
-import page.CreditPage;
 import page.StartPage;
-import java.sql.SQLException;
+
 import static com.codeborne.selenide.Selenide.open;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static data.DataGenerator.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CreditPageTest {
     @BeforeAll
@@ -36,11 +35,10 @@ public class CreditPageTest {
 
     @Test
     @Order(1)
-    void buyInCreditGate() throws SQLException {
+    void buyInCreditGate() {
         Card card = new Card(getApprovedNumber(), getCurrentMonth(), getNextYear(), getValidName(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buyInCredit();
-        val creditPage = new CreditPage();
+        val creditPage = startPage.buyInCredit();
         creditPage.fulfillData(card);
         creditPage.checkSuccessNotification();
         assertEquals("APPROVED", DbUtils.getCreditStatus());
@@ -48,23 +46,20 @@ public class CreditPageTest {
 
     @Test
     @Order(2)
-    void buyInCreditGateWithDeclinedCardNumber() throws SQLException {
+    void buyInCreditGateWithDeclinedCardNumber() {
         Card card = new Card(getDeclinedNumber(), getCurrentMonth(), getNextYear(), getValidName(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buyInCredit();
-        val creditPage = new CreditPage();
+        val creditPage = startPage.buyInCredit();
         creditPage.fulfillData(card);
         creditPage.checkDeclineNotification();
-
     }
 
     @Test
     @Order(3)
-    void buyInCreditGateWithInvalidCardNumber() throws SQLException {
+    void buyInCreditGateWithInvalidCardNumber() {
         Card card = new Card(getInvalidCardNumber(), getCurrentMonth(), getNextYear(), getValidName(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buyInCredit();
-        val creditPage = new CreditPage();
+        val creditPage = startPage.buyInCredit();
         creditPage.fulfillData(card);
         creditPage.checkDeclineNotification();
     }
@@ -74,10 +69,9 @@ public class CreditPageTest {
     void buyInCreditGateWithShortCardNumber() {
         Card card = new Card(getShortCardNumber(), getCurrentMonth(), getNextYear(), getValidName(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buyInCredit();
-        val creditPage = new CreditPage();
+        val creditPage = startPage.buyInCredit();
         creditPage.fulfillData(card);
-        creditPage.checkInvalidFormat();
+        creditPage.findErrorMessage("Неверный формат");
     }
 
     @Test
@@ -85,10 +79,9 @@ public class CreditPageTest {
     void buyInCreditGateWithEmptyCardNumber() {
         Card card = new Card(null, getCurrentMonth(), getNextYear(), getValidName(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buyInCredit();
-        val creditPage = new CreditPage();
+        val creditPage = startPage.buyInCredit();
         creditPage.fulfillData(card);
-        creditPage.checkRequiredField();
+        creditPage.findErrorMessage("Поле обязательно для заполнения");
     }
 
     @Test
@@ -96,10 +89,9 @@ public class CreditPageTest {
     void buyInCreditGateWithInvalidMonth() {
         Card card = new Card(getApprovedNumber(), "00", getNextYear(), getValidName(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buyInCredit();
-        val creditPage = new CreditPage();
+        val creditPage = startPage.buyInCredit();
         creditPage.fulfillData(card);
-        creditPage.checkInvalidDate();
+        creditPage.findErrorMessage("Неверно указан срок действия карты");
     }
 
     @Test
@@ -107,10 +99,9 @@ public class CreditPageTest {
     void buyInCreditGateWithNonExistingMonth() {
         Card card = new Card(getApprovedNumber(), "13", getNextYear(), getValidName(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buyInCredit();
-        val creditPage = new CreditPage();
+        val creditPage = startPage.buyInCredit();
         creditPage.fulfillData(card);
-        creditPage.checkInvalidDate();
+        creditPage.findErrorMessage("Неверно указан срок действия карты");
     }
 
     @Test
@@ -118,10 +109,9 @@ public class CreditPageTest {
     void buyInCreditGateWithExpiredMonth() {
         Card card = new Card(getApprovedNumber(), getLastMonth(), getCurrentYear(), getValidName(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buyInCredit();
-        val creditPage = new CreditPage();
+        val creditPage = startPage.buyInCredit();
         creditPage.fulfillData(card);
-        creditPage.checkExpiredDate();
+        creditPage.findErrorMessage("Истёк срок действия карты");
     }
 
     @Test
@@ -129,10 +119,9 @@ public class CreditPageTest {
     void buyInCreditGateWithEmptyMonth() {
         Card card = new Card(getApprovedNumber(), null, getNextYear(), getValidName(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buyInCredit();
-        val creditPage = new CreditPage();
+        val creditPage = startPage.buyInCredit();
         creditPage.fulfillData(card);
-        creditPage.checkRequiredField();
+        creditPage.findErrorMessage("Поле обязательно для заполнения");
     }
 
     @Test
@@ -140,10 +129,9 @@ public class CreditPageTest {
     void buyInCreditGateWithExpiredYear() {
         Card card = new Card(getApprovedNumber(), getCurrentMonth(), getLastYear(), getValidName(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buyInCredit();
-        val creditPage = new CreditPage();
+        val creditPage = startPage.buyInCredit();
         creditPage.fulfillData(card);
-        creditPage.checkExpiredDate();
+        creditPage.findErrorMessage("Истёк срок действия карты");
     }
 
     @Test
@@ -151,10 +139,9 @@ public class CreditPageTest {
     void buyInCreditGateWithEmptyYear() {
         Card card = new Card(getApprovedNumber(), getCurrentMonth(), null, getValidName(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buyInCredit();
-        val creditPage = new CreditPage();
+        val creditPage = startPage.buyInCredit();
         creditPage.fulfillData(card);
-        creditPage.checkRequiredField();
+        creditPage.findErrorMessage("Поле обязательно для заполнения");
     }
 
     @Test
@@ -162,10 +149,9 @@ public class CreditPageTest {
     void buyInCreditGateWithOnlyName() {
         Card card = new Card(getApprovedNumber(), getCurrentMonth(), getNextYear(), getOnlyName(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buyInCredit();
-        val creditPage = new CreditPage();
+        val creditPage = startPage.buyInCredit();
         creditPage.fulfillData(card);
-        creditPage.checkInvalidName();
+        creditPage.findErrorMessage("Введите полное имя и фамилию");
     }
 
     @Test
@@ -173,10 +159,9 @@ public class CreditPageTest {
     void buyInCreditGateWithOnlySurname() {
         Card card = new Card(getApprovedNumber(), getCurrentMonth(), getNextYear(), getOnlySurname(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buyInCredit();
-        val creditPage = new CreditPage();
+        val creditPage = startPage.buyInCredit();
         creditPage.fulfillData(card);
-        creditPage.checkInvalidName();
+        creditPage.findErrorMessage("Введите полное имя и фамилию");
     }
 
     @Test
@@ -184,10 +169,9 @@ public class CreditPageTest {
     void buyInCreditGateWithTooLongName() {
         Card card = new Card(getApprovedNumber(), getCurrentMonth(), getNextYear(), getTooLongName(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buyInCredit();
-        val creditPage = new CreditPage();
+        val creditPage = startPage.buyInCredit();
         creditPage.fulfillData(card);
-        creditPage.checkLongName();
+        creditPage.findErrorMessage("Значение поля не может содержать более 100 символов");
     }
 
     @Test
@@ -195,10 +179,9 @@ public class CreditPageTest {
     void buyInCreditGateWithDigitsInName() {
         Card card = new Card(getApprovedNumber(), getCurrentMonth(), getNextYear(), getNameWithNumbers(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buyInCredit();
-        val creditPage = new CreditPage();
+        val creditPage = startPage.buyInCredit();
         creditPage.fulfillData(card);
-        creditPage.checkInvalidDataName();
+        creditPage.findErrorMessage("Значение поля может содержать только буквы и дефис");
     }
 
     @Test
@@ -206,10 +189,9 @@ public class CreditPageTest {
     void buyInCreditGateWithTooShortName() {
         Card card = new Card(getApprovedNumber(), getCurrentMonth(), getNextYear(), getNameWithOneLetter(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buyInCredit();
-        val creditPage = new CreditPage();
+        val creditPage = startPage.buyInCredit();
         creditPage.fulfillData(card);
-        creditPage.checkShortName();
+        creditPage.findErrorMessage("Значение поля должно содержать больше одной буквы");
     }
 
     @Test
@@ -217,10 +199,9 @@ public class CreditPageTest {
     void buyInCreditGateWithEmptyName() {
         Card card = new Card(getApprovedNumber(), getCurrentMonth(), getNextYear(), null, getValidCvc());
         val startPage = new StartPage();
-        startPage.buyInCredit();
-        val creditPage = new CreditPage();
+        val creditPage = startPage.buyInCredit();
         creditPage.fulfillData(card);
-        creditPage.checkRequiredField();
+        creditPage.findErrorMessage("Поле обязательно для заполнения");
     }
 
     @Test
@@ -228,10 +209,9 @@ public class CreditPageTest {
     void buyInCreditGateWithOneDigitInCvc() {
         Card card = new Card(getApprovedNumber(), getCurrentMonth(), getNextYear(), getValidName(), getCvcWithOneDigit());
         val startPage = new StartPage();
-        startPage.buyInCredit();
-        val creditPage = new CreditPage();
+        val creditPage = startPage.buyInCredit();
         creditPage.fulfillData(card);
-        creditPage.checkInvalidCvc();
+        creditPage.findErrorMessage("Значение поля должно содержать 3 цифры");
     }
 
     @Test
@@ -239,9 +219,8 @@ public class CreditPageTest {
     void buyInCreditGateWithEmptyCvc() {
         Card card = new Card(getApprovedNumber(), getCurrentMonth(), getNextYear(), getValidName(), null);
         val startPage = new StartPage();
-        startPage.buyInCredit();
-        val creditPage = new CreditPage();
+        val creditPage = startPage.buyInCredit();
         creditPage.fulfillData(card);
-        creditPage.checkRequiredField();
+        creditPage.findErrorMessage("Поле обязательно для заполнения");
     }
 }

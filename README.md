@@ -11,18 +11,40 @@
 Приложение в собственной СУБД должно сохранять информацию о том, успешно ли был совершён платёж и каким способом. Данные карт при этом сохранять не допускается.
 
 ## Инструкция запуска приложения и тестов:
+
 1. Склонировать проект из репозитория командой:
 - git clone
+
 3. Открыть проект в IntelliJ IDEA
-4. Для запуска контейнеров с MySQL и Node.js необходимо ввести в терминале команды:
-- docker-compose up node_app -d --force-recreate
-- docker-compose up mysql_service -d --force-recreate
-5. Для запуска контейнеров с PostgreSQL и Node.js необходимо ввести в терминале команды:
-- docker-compose up node_app -d --force-recreate
-- docker-compose up postgres_service -d --force-recreate
-6. Для запуска приложения необходимо ввести в терминале команду: 
-- java -jar artifacts/aqa-shop.jar
-7. Для запуска тестов и получения отчета Allure в браузере необходмо использовать команду: 
-- ./gradlew allureserve
+
+4. Для запуска контейнеров необходимо ввести в терминале команду:
+
+- docker-compose up --build
+
+5. Для запуска приложения необходимо ввести в терминале команду:
+
+ для MySQL: 
+ 
+- java "-Dspring.datasource.url=jdbc:mysql://localhost:3306/app" -jar aqa-shop.jar
+
+для PostgreSQL:
+
+- java "-Dspring.datasource.url=jdbc:postgresql://localhost:5432/app" -jar aqa-shop.jar
+
+6. Для запуска тестов необходмо использовать команду: 
+
+для MySQL:
+
+./gradlew clean test "-Ddb.url=jdbc:mysql://localhost:3306/app"
+
+для PostgreSQL:
+
+./gradlew clean test "-Ddb.url=jdbc:postgresql://localhost:5432/app"
+
+7. Для создания отчета с помощью Allure необходимо использовать команду:
+
+- ./gradlew allureServe
+
 8. После окончания тестов завершить работу приложения (Ctrl + C), остановить контейнеры командой: 
+
 - docker-compose down

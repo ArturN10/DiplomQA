@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 public class DataGenerator {
-    public static Faker faker = new Faker(new Locale("en"));
+    public static Faker faker = new Faker(new Locale("ru"));
 
     public static String getApprovedNumber() {
         return "4444 4444 4444 4441";
@@ -77,7 +77,7 @@ public class DataGenerator {
     }
 
     public static String getNameWithNumbers() {
-        return faker.number().digits(9);
+        return faker.number().digits(10);
     }
 
     public static String getNameWithOneLetter() {

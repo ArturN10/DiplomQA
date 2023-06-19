@@ -19,7 +19,6 @@ public class StartPage {
         return new PaymentPage();
 
     }
-
     public CreditPage buyInCredit() {
         creditButton.click();
         return new CreditPage();

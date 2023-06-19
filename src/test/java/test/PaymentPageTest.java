@@ -6,9 +6,7 @@ import lombok.val;
 import org.junit.jupiter.api.*;
 import data.Card;
 import data.DbUtils;
-import page.PaymentPage;
 import page.StartPage;
-import java.sql.SQLException;
 import static com.codeborne.selenide.Selenide.open;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static data.DataGenerator.*;
@@ -36,11 +34,10 @@ public class PaymentPageTest {
 
     @Test
     @Order(1)
-    void buyInPaymentGate() throws SQLException {
+    void buyInPaymentGate() {
         Card card = new Card(getApprovedNumber(), getCurrentMonth(), getNextYear(), getValidName(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buy();
-        val paymentPage = new PaymentPage();
+        val paymentPage = startPage.buy();
         paymentPage.fulfillData(card);
         paymentPage.checkSuccessNotification();
         assertEquals("APPROVED", DbUtils.getPaymentStatus());
@@ -48,11 +45,10 @@ public class PaymentPageTest {
 
     @Test
     @Order(2)
-    void buyInPaymentGateWithDeclinedCardNumber() throws SQLException {
+    void buyInPaymentGateWithDeclinedCardNumber() {
         Card card = new Card(getDeclinedNumber(), getCurrentMonth(), getNextYear(), getValidName(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buy();
-        val paymentPage = new PaymentPage();
+        val paymentPage = startPage.buy();
         paymentPage.fulfillData(card);
         paymentPage.checkDeclineNotification();
         assertEquals("DECLINED", DbUtils.getPaymentStatus());
@@ -60,11 +56,10 @@ public class PaymentPageTest {
 
     @Test
     @Order(3)
-    void buyInPaymentGateWithInvalidCardNumber() throws SQLException {
+    void buyInPaymentGateWithInvalidCardNumber() {
         Card card = new Card(getInvalidCardNumber(), getCurrentMonth(), getNextYear(), getValidName(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buy();
-        val paymentPage = new PaymentPage();
+        val paymentPage = startPage.buy();
         paymentPage.fulfillData(card);
         paymentPage.checkDeclineNotification();
     }
@@ -74,10 +69,9 @@ public class PaymentPageTest {
     void buyInPaymentGateWithShortCardNumber() {
         Card card = new Card(getShortCardNumber(), getCurrentMonth(), getNextYear(), getValidName(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buy();
-        val paymentPage = new PaymentPage();
+        val paymentPage = startPage.buy();
         paymentPage.fulfillData(card);
-        paymentPage.checkInvalidFormat();
+        paymentPage.findErrorMessage("Неверный формат");
     }
 
     @Test
@@ -85,10 +79,9 @@ public class PaymentPageTest {
     void buyInPaymentGateWithEmptyCardNumber() {
         Card card = new Card(null, getCurrentMonth(), getNextYear(), getValidName(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buy();
-        val paymentPage = new PaymentPage();
+        val paymentPage = startPage.buy();
         paymentPage.fulfillData(card);
-        paymentPage.checkRequiredField();
+        paymentPage.findErrorMessage("Поле обязательно для заполнения");
     }
 
     @Test
@@ -96,10 +89,9 @@ public class PaymentPageTest {
     void buyInPaymentGateWithInvalidMonth() {
         Card card = new Card(getApprovedNumber(), "00", getNextYear(), getValidName(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buy();
-        val paymentPage = new PaymentPage();
+        val paymentPage = startPage.buy();
         paymentPage.fulfillData(card);
-        paymentPage.checkInvalidDate();
+        paymentPage.findErrorMessage("Неверно указан срок действия карты");
     }
 
     @Test
@@ -107,10 +99,9 @@ public class PaymentPageTest {
     void buyInPaymentGateWithNonExistingMonth() {
         Card card = new Card(getApprovedNumber(), "13", getNextYear(), getValidName(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buy();
-        val paymentPage = new PaymentPage();
+        val paymentPage = startPage.buy();
         paymentPage.fulfillData(card);
-        paymentPage.checkInvalidDate();
+        paymentPage.findErrorMessage("Неверно указан срок действия карты");
     }
 
     @Test
@@ -118,10 +109,9 @@ public class PaymentPageTest {
     void buyInPaymentGateWithExpiredMonth() {
         Card card = new Card(getApprovedNumber(), getLastMonth(), getCurrentYear(), getValidName(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buy();
-        val paymentPage = new PaymentPage();
+        val paymentPage = startPage.buy();
         paymentPage.fulfillData(card);
-        paymentPage.checkExpiredDate();
+        paymentPage.findErrorMessage("Истёк срок действия карты");
     }
 
     @Test
@@ -129,10 +119,9 @@ public class PaymentPageTest {
     void buyInPaymentGateWithEmptyMonth() {
         Card card = new Card(getApprovedNumber(), null, getNextYear(), getValidName(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buy();
-        val paymentPage = new PaymentPage();
+        val paymentPage = startPage.buy();
         paymentPage.fulfillData(card);
-        paymentPage.checkRequiredField();
+        paymentPage.findErrorMessage("Поле обязательно для заполнения");
     }
 
     @Test
@@ -140,10 +129,9 @@ public class PaymentPageTest {
     void buyInPaymentGateWithExpiredYear() {
         Card card = new Card(getApprovedNumber(), getCurrentMonth(), getLastYear(), getValidName(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buy();
-        val paymentPage = new PaymentPage();
+        val paymentPage = startPage.buy();
         paymentPage.fulfillData(card);
-        paymentPage.checkExpiredDate();
+        paymentPage.findErrorMessage("Истёк срок действия карты");
     }
 
     @Test
@@ -151,10 +139,9 @@ public class PaymentPageTest {
     void buyInPaymentGateWithEmptyYear() {
         Card card = new Card(getApprovedNumber(), getCurrentMonth(), null, getValidName(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buy();
-        val paymentPage = new PaymentPage();
+        val paymentPage = startPage.buy();
         paymentPage.fulfillData(card);
-        paymentPage.checkRequiredField();
+        paymentPage.findErrorMessage("Поле обязательно для заполнения");
     }
 
     @Test
@@ -162,10 +149,9 @@ public class PaymentPageTest {
     void buyInPaymentGateWithOnlyName() {
         Card card = new Card(getApprovedNumber(), getCurrentMonth(), getNextYear(), getOnlyName(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buy();
-        val paymentPage = new PaymentPage();
+        val paymentPage = startPage.buy();
         paymentPage.fulfillData(card);
-        paymentPage.checkInvalidName();
+        paymentPage.findErrorMessage("Введите полное имя и фамилию");
     }
 
     @Test
@@ -173,10 +159,9 @@ public class PaymentPageTest {
     void buyInPaymentGateWithOnlySurname() {
         Card card = new Card(getApprovedNumber(), getCurrentMonth(), getNextYear(), getOnlySurname(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buy();
-        val paymentPage = new PaymentPage();
+        val paymentPage = startPage.buy();
         paymentPage.fulfillData(card);
-        paymentPage.checkInvalidName();
+        paymentPage.findErrorMessage("Введите полное имя и фамилию");
     }
 
     @Test
@@ -184,10 +169,9 @@ public class PaymentPageTest {
     void buyInPaymentGateWithTooLongName() {
         Card card = new Card(getApprovedNumber(), getCurrentMonth(), getNextYear(), getTooLongName(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buy();
-        val paymentPage = new PaymentPage();
+        val paymentPage = startPage.buy();
         paymentPage.fulfillData(card);
-        paymentPage.checkLongName();
+        paymentPage.findErrorMessage("Значение поля не может содержать более 100 символов");
     }
 
     @Test
@@ -195,10 +179,9 @@ public class PaymentPageTest {
     void buyInPaymentGateWithDigitsInName() {
         Card card = new Card(getApprovedNumber(), getCurrentMonth(), getNextYear(), getNameWithNumbers(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buy();
-        val paymentPage = new PaymentPage();
+        val paymentPage = startPage.buy();
         paymentPage.fulfillData(card);
-        paymentPage.checkInvalidDataName();
+        paymentPage.findErrorMessage("Значение поля может содержать только буквы и дефис");
     }
 
     @Test
@@ -206,10 +189,9 @@ public class PaymentPageTest {
     void buyInPaymentGateWithTooShortName() {
         Card card = new Card(getApprovedNumber(), getCurrentMonth(), getNextYear(), getNameWithOneLetter(), getValidCvc());
         val startPage = new StartPage();
-        startPage.buy();
-        val paymentPage = new PaymentPage();
+        val paymentPage = startPage.buy();
         paymentPage.fulfillData(card);
-        paymentPage.checkShortName();
+        paymentPage.findErrorMessage("Значение поля должно содержать больше одной буквы");
     }
 
     @Test
@@ -217,10 +199,9 @@ public class PaymentPageTest {
     void buyInPaymentGateWithEmptyName() {
         Card card = new Card(getApprovedNumber(), getCurrentMonth(), getNextYear(), null, getValidCvc());
         val startPage = new StartPage();
-        startPage.buy();
-        val paymentPage = new PaymentPage();
+        val paymentPage = startPage.buy();
         paymentPage.fulfillData(card);
-        paymentPage.checkRequiredField();
+        paymentPage.findErrorMessage("Поле обязательно для заполнения");
     }
 
     @Test
@@ -228,10 +209,9 @@ public class PaymentPageTest {
     void buyInPaymentGateWithOneDigitInCvc() {
         Card card = new Card(getApprovedNumber(), getCurrentMonth(), getNextYear(), getValidName(), getCvcWithOneDigit());
         val startPage = new StartPage();
-        startPage.buy();
-        val paymentPage = new PaymentPage();
+        val paymentPage = startPage.buy();
         paymentPage.fulfillData(card);
-        paymentPage.checkInvalidCvc();
+        paymentPage.findErrorMessage("Значение поля должно содержать 3 цифры");
     }
 
     @Test
@@ -239,9 +219,8 @@ public class PaymentPageTest {
     void buyInPaymentGateWithEmptyCvc() {
         Card card = new Card(getApprovedNumber(), getCurrentMonth(), getNextYear(), getValidName(), null);
         val startPage = new StartPage();
-        startPage.buy();
-        val paymentPage = new PaymentPage();
+        val paymentPage = startPage.buy();
         paymentPage.fulfillData(card);
-        paymentPage.checkRequiredField();
+        paymentPage.findErrorMessage("Поле обязательно для заполнения");
     }
 }

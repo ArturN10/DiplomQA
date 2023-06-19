@@ -8,9 +8,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DbUtils {
-    private static String url= System.getProperty("db.url");
-    private static String user = System.getProperty("db.user");
-    private static String password = System.getProperty("db.password");
+    private static final String url= System.getProperty("db.url");
+    private static final String user = System.getProperty("db.user");
+    private static final String password = System.getProperty("db.password");
 
     public static void clearTables() {
         val deletePaymentEntity = "DELETE FROM payment_entity";
@@ -29,18 +29,17 @@ public class DbUtils {
         }
 
     }
-
-    public static String getPaymentStatus() throws SQLException {
+    public static String getPaymentStatus() {
         String statusSQL = "SELECT status FROM payment_entity";
         return getStatus(statusSQL);
     }
 
-    public static String getCreditStatus() throws SQLException {
+    public static String getCreditStatus() {
         String statusSQL = "SELECT status FROM credit_request_entity";
         return getStatus(statusSQL);
     }
 
-    private static String getStatus(String query) throws SQLException {
+    private static String getStatus(String query) {
         String result = "";
         val runner = new QueryRunner();
         try
@@ -48,10 +47,12 @@ public class DbUtils {
                         url, user, password)
                 ) {
 
-            result = runner.query(conn, query, new ScalarHandler<String>());
+            result = runner.query(conn, query, new ScalarHandler<>());
             System.out.println(result);
             return result;
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
         }
-
+        return result;
     }
 }
