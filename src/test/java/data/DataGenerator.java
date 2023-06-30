@@ -38,8 +38,7 @@ public class DataGenerator {
         LocalDate localDate = LocalDate.now();
         LocalDate lastMonth = localDate.minusMonths(1);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM");
-        String monthValue = lastMonth.format(formatter);
-        return monthValue;
+        return lastMonth.format(formatter);
 
     }
 
@@ -81,16 +80,16 @@ public class DataGenerator {
     }
 
     public static String getNameWithOneLetter() {
-        return faker.lorem().characters(1);
+        return faker.lorem().fixedString (1);
     }
 
     public static String getValidCvc() {
-        FakeValuesService fakeValuesService = new FakeValuesService(new Locale("en"), new RandomService());
+        FakeValuesService fakeValuesService = new FakeValuesService(new Locale("ru"), new RandomService());
         return fakeValuesService.numerify("###");
     }
 
     public static String getCvcWithOneDigit() {
-        FakeValuesService fakeValuesService = new FakeValuesService(new Locale("en"), new RandomService());
+        FakeValuesService fakeValuesService = new FakeValuesService(new Locale("ru"), new RandomService());
         return fakeValuesService.numerify("#");
     }
 }

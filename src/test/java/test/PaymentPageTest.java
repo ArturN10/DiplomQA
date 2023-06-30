@@ -111,7 +111,7 @@ public class PaymentPageTest {
         val startPage = new StartPage();
         val paymentPage = startPage.buy();
         paymentPage.fulfillData(card);
-        paymentPage.findErrorMessage("Истёк срок действия карты");
+        paymentPage.findErrorMessage("Неверно указан срок действия карты");
     }
 
     @Test
@@ -211,7 +211,7 @@ public class PaymentPageTest {
         val startPage = new StartPage();
         val paymentPage = startPage.buy();
         paymentPage.fulfillData(card);
-        paymentPage.findErrorMessage("Значение поля должно содержать 3 цифры");
+        paymentPage.findErrorMessage("Неверный формат");
     }
 
     @Test

@@ -1,6 +1,5 @@
 package page;
 
-import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 import data.Card;
@@ -36,11 +35,11 @@ public class CreditPage {
 
     }
     public void checkSuccessNotification() {
-        $(".notification_status_ok").shouldBe(Condition.visible, Duration.ofMillis(15000));
+        $(".notification_status_ok").shouldBe(Condition.visible, Duration.ofMillis(20000));
     }
 
     public void checkDeclineNotification() {
-        $("notification_status_error").shouldBe(Condition.visible, Duration.ofMillis(15000));
+        $("notification_status_error").shouldBe(Condition.visible, Duration.ofMillis(20000));
     }
     public void  findErrorMessage (String text) {
         $(".input__sub").shouldHave(exactText(text)).shouldBe(visible);

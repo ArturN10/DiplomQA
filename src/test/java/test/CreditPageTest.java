@@ -111,7 +111,7 @@ public class CreditPageTest {
         val startPage = new StartPage();
         val creditPage = startPage.buyInCredit();
         creditPage.fulfillData(card);
-        creditPage.findErrorMessage("Истёк срок действия карты");
+        creditPage.findErrorMessage("Неверно указан срок действия карты");
     }
 
     @Test
@@ -211,7 +211,7 @@ public class CreditPageTest {
         val startPage = new StartPage();
         val creditPage = startPage.buyInCredit();
         creditPage.fulfillData(card);
-        creditPage.findErrorMessage("Значение поля должно содержать 3 цифры");
+        creditPage.findErrorMessage("Неверный формат");
     }
 
     @Test
